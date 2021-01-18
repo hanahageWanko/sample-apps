@@ -4,36 +4,47 @@
       die('データベースに接続できません：' . musqli_error());
   }
 
-  function validateStr($str, $maxStrInt, $valueName) {
-    if(!isset($str) || !strlen($str)) {
-      return ['flag' => false, 'value' => "${valueName}を入力してください"];
-    } else if (strlen($str) > $maxStrInt) {
-      return ['flag' => false, 'value' => "${valueName}は${maxStrInt}文字以内で入力してください"];
-    } else {
-      return ['flag' => true, 'value' => $str];
-    }
+  function validateStr($str, $maxStrInt, $valueName)
+  {
+      if (!isset($str) || !strlen($str)) {
+          return ['flag' => false, 'value' => "${valueName}を入力してください"];
+      } elseif (strlen($str) > $maxStrInt) {
+          return ['flag' => false, 'value' => "${valueName}は${maxStrInt}文字以内で入力してください"];
+      } else {
+          return ['flag' => true, 'value' => $str];
+      }
   }
 
   $errors = array();
 
-  if($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $name = validateStr($_POST['name'], 40, '名前');
-    $name['flag'] ? $name = $name['value'] : $errors['name'] = $name['value'];
-    $comment = validateStr($_POST['comment'], 40, 'ひとこと');
-    $comment['flag']
+  if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+      $name = validateStr($_POST['name'], 40, '名前');
+      $name['flag'] ? $name = $name['value'] : $errors['name'] = $name['value'];
+      $comment = validateStr($_POST['comment'], 40, 'ひとこと');
+      $comment['flag']
       ? $comment = $comment['value']
       : $errors['commnet'] = $comment['value'];
 
-    if(count($errors) === 0) {
-      $insertSql = "insert into `oneline_bbs` (`name`, `comment`, `created_at`) values
+      if (count($errors) === 0) {
+          $insertSql = "insert into `oneline_bbs` (`name`, `comment`, `created_at`) values
             ('" . $mysqli->real_escape_string($name) . "','"
             . $mysqli->real_escape_string($comment) . "','"
             . date('Y-m-d H:i:s'). "')";
-      $mysqli->query($insertSql);
-      header('Location: http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
-    }
+          $mysqli->query($insertSql);
+          header('Location: http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
+      }
 
-}
+      $sql = "select * from `oneline_bbs` order by `created_at` DESC";
+      $result = $mysqli->query($sql);
+      $posts = [];
+      if ($result !== false && mysqli_num_rows($result)) {
+          while ($post = mysqli_fetch_assoc($result)) {
+              $posts[] = $post;
+          }
+      }
+      mysqli_free_result($result);
+      mysqli_close($mysqli);
+  }
 ?>
 <!DOCTYPE html>
 <html lang="ja">
@@ -60,26 +71,18 @@
     <input type="submit" name="submit" value="送信">
   </form>
   <h3>リスト</h3>
-  <?php
-    $sql = "select * from `oneline_bbs` order by `created_at` DESC";
-    $result = $mysqli->query($sql);
-    if($result !== false && mysqli_num_rows($result)):
-  ?>
-  <ul>
-      <?php while($post = mysqli_fetch_assoc($result)): ?>
-        <li>
-          <?php
-            echo htmlspecialchars($post['name'], ENT_QUOTES, 'UTF-8');
-            echo htmlspecialchars($post['comment'], ENT_QUOTES, 'UTF-8');
-            echo htmlspecialchars($post['created_at'], ENT_QUOTES, 'UTF-8');
-          ?>
-        </li>
-    <?php endwhile; ?>
-  </ul>
-    <?php endif; ?>
-    <?php
-      mysqli_free_result($result);
-      mysqli_close($mysqli);
-    ?>
+  <?php if (count($posts) > 0): ?>
+    <ul>
+        <?php foreach ($posts as $post): ?>
+          <li>
+            <?php
+              echo htmlspecialchars($post['name'], ENT_QUOTES, 'UTF-8');
+              echo htmlspecialchars($post['comment'], ENT_QUOTES, 'UTF-8');
+              echo " - " . htmlspecialchars($post['created_at'], ENT_QUOTES, 'UTF-8');
+            ?>
+          </li>
+        <?php endforeach; ?>
+    </ul>
+  <?php endif; ?>
 </body>
 </html>
