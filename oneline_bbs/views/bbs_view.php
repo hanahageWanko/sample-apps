@@ -28,8 +28,8 @@
         <?php foreach ($posts as $post): ?>
           <li>
             <?php
-              echo htmlspecialchars($post['name'], ENT_QUOTES, 'UTF-8');
-              echo htmlspecialchars($post['comment'], ENT_QUOTES, 'UTF-8');
+              echo "名前：" . htmlspecialchars($post['name'], ENT_QUOTES, 'UTF-8') . "<br>";
+              echo "呟き：" . htmlspecialchars($post['comment'], ENT_QUOTES, 'UTF-8') . "<br>";
               echo " - " . htmlspecialchars($post['created_at'], ENT_QUOTES, 'UTF-8');
             ?>
           </li>
