@@ -61,16 +61,20 @@
 
       public function run()
       {
-          // Routerクラスのresolveメソッドを呼び出して、ルーティングパラメータを取得
-          $params = $this->router->resolve($this->request->getPathInfo());
-          if ($params === false) {
-              // TODO:A
+          try {
+              // Routerクラスのresolveメソッドを呼び出して、ルーティングパラメータを取得
+              $params = $this->router->resolve($this->request->getPathInfo());
+              if ($params === false) {
+                  throw new HttpNotFoundException('No route found for ' . $this->request->getPathInfo());
+              }
+
+              $controller = $params['controller'];
+              $action = $params['action'];
+
+              $this->runAction($controller, $action, $params);
+          } catch (HttpNotFoundException $e) {
+              $this->render404Page($e);
           }
-
-          $controller = $params['controller'];
-          $action = $params['action'];
-
-          $this->runAction($controller, $action, $params);
 
           $this->response->send();
       }
@@ -80,10 +84,34 @@
           $controller_class = ucfirst($controller_name) . 'Controller';
           $controller = $this->findController($controller_class);
           if ($controller === false) {
-              // TODO:B
+              throw new HttpNotFoundException($controller_class . ' controller is not found.');
           }
           $content = $controller->run($action, $params);
           $this->response->setContent($content);
+      }
+
+      protected function render404Page($e)
+      {
+          $this->response->setStatusCode(404, 'Not Found');
+          $message = $this->idDebugMode() ? $e->getMessage() : 'Page not found.';
+          $message = htmlspecialchars($message, Ent_QUOTES, 'UTF-8');
+
+          $this->response->setContent(
+              <<<EOF
+                <!DOCTYPE html>
+                <html lang="ja">
+                <head>
+                  <meta charset="UTF-8">
+                  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+                  <title>404</title>
+                </head>
+                <body>
+                  {$message}
+                </body>
+                </html>
+              EOF
+          );
       }
 
       protected function findController($controller_class)
