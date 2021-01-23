@@ -33,9 +33,9 @@
               $content = $this->render(
                   $_layout,
                   array_merge(
-                                      $this->layout_variables,
-                                      ['_content' => $content]
-                                  )
+                      $this->layout_variables,
+                      ['_content' => $content]
+                  )
               );
           }
           return $content;
