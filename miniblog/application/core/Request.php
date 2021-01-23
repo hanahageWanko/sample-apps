@@ -1,7 +1,7 @@
 <?php
   class Request
   {
-      public function geBaseUrl()
+      public function getBaseUrl()
       {
           $script_name = $_SERVER['SCRIPT_NAME'];
           $request_uri = $this->getRequestUri();
