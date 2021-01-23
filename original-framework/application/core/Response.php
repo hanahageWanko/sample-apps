@@ -6,7 +6,7 @@
     protected $http_headers = [];
 
     public function send() {
-      header('HTTP/1.1 ' . $this->status_code . ' ' . $this->satus_text);
+      header('HTTP/1.1 ' . $this->status_code . ' ' . $this->status_text);
       foreach($this->http_headers as $name => $value) {
         header($name . ': ' . $value);
       }
@@ -14,8 +14,8 @@
       echo $this->content;
     }
 
-    public function setContent($coutent) {
-      $htis->content = $content;
+    public function setContent($content) {
+      $this->content = $content;
     }
 
     public function setStatusCode($status_code, $status_text = '') {

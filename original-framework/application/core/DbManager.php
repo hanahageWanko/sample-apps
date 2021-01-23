@@ -3,7 +3,7 @@
   {
       protected $connections = [];
       protected $repository_connection_map = [];
-      protected $repositores = [];
+      protected $repositories = [];
 
       public function __destruct()
       {
@@ -29,10 +29,10 @@
               $params['dsn'],
               $params['user'],
               $params['password'],
-              $params['options']
+              $params['option']
           );
 
-          $con->setAttribute(PDO::ATTR_ERRMODE, PDO::ERMODE_EXCEPTION);
+          $con->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
           $this->connections[$name] = $con;
       }
