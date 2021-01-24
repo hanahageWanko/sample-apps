@@ -38,6 +38,7 @@
                   )
               );
           }
+          var_dump($content);
           return $content;
       }
 
