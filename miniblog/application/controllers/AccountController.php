@@ -1,4 +1,5 @@
 <?php
+
 class AccountController extends Controller
 {
     protected $auth_actions = ['index', 'signout', 'follow'];

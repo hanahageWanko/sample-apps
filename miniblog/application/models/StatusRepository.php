@@ -1,27 +1,61 @@
 <?php
-  class StatuRepository extends DbRepository {
+class StatusRepository extends DbRepository {
     public function insert($user_id, $body) {
-      $now = new DateTime();
-      $sql = " insert into status(usre_id, body, created_at)
-               value (:user_id, :body, :created_at) ";
+        $now = new DateTime();
 
-      $stmt = $this->execute($sql, [
-        ':usre_id'    => $user_id,
-        ':body'       => $body,
-        ':created_at' => $now->format('Y-m-d H:i:s')
-      ]);
+        $sql = "
+            INSERT INTO status(user_id, body, created_at)
+                VALUES(:user_id, :body, :created_at)
+        ";
+
+        $stmt = $this->execute($sql, [
+            ':user_id'    => $user_id,
+            ':body'       => $body,
+            ':created_at' => $now->format('Y-m-d H:i:s')
+        ]);
     }
 
-    public function fetchAllPersonalArchivesByuserId($user_id) {
-      $sql = "
-              select a.*, u.user_name
-              from status a
-              left join user u
-              ON a.user_id = u.id
-              where u.id = :user_id
-              order by a.created_at desc  
-      ";
+    public function fetchAllPersonalArchivesByUserId($user_id)
+    {
+        $sql = "
+            SELECT a.*, u.user_name
+            FROM status a
+                LEFT JOIN user u ON a.user_id = u.id
+                LEFT JOIN following f ON f.following_id = a.user_id
+                    AND f.user_id = :user_id
+                WHERE f.user_id = :user_id OR u.id = :user_id
+                ORDER BY a.created_at DESC
+        ";
 
-      return $this->fetchAll($sql, [':user_id' => $user_id]);
+        return $this->fetchAll($sql, [':user_id' => $user_id]);
     }
-  }
+
+    public function fetchAllByUserId($user_id)
+    {
+        $sql = "
+            SELECT a.*, u.user_name
+                FROM status a
+                    LEFT JOIN user u ON a.user_id = u.id
+                WHERE u.id = :user_id
+                ORDER BY a.created_at DESC
+        ";
+
+        return $this->fetchAll($sql, [':user_id' => $user_id]);
+    }
+
+    public function fetchByIdAndUserName($id, $user_name)
+    {
+        $sql = "
+            SELECT a.* , u.user_name
+                FROM status a
+                    LEFT JOIN user u ON u.id = a.user_id
+                WHERE a.id = :id
+                    AND u.user_name = :user_name
+        ";
+
+        return $this->fetch($sql, [
+            ':id'        => $id,
+            ':user_name' => $user_name,
+        ]);
+    }
+}
