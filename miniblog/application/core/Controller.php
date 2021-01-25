@@ -14,7 +14,7 @@
       public function __construct($application)
       {
           // 自分自身のクラス名を取得し、Controllerの文字数分を取り除き小文字に変換
-          $this->controller_name = strtolower(substr(get_class($this), 0 -10));
+          $this->controller_name = strtolower(substr(get_class($this), 0, -10));
           $this->application = $application;
           $this->request     = $application->getRequest();
           $this->response    = $application->getResponse();

@@ -1,4 +1,10 @@
 <?php
+
+/**
+ * Application.
+ *
+ * @author Katsuhiro Ogawa <fivestar@nequal.jp>
+ */
 abstract class Application
 {
     protected $debug = false;
@@ -21,7 +27,7 @@ abstract class Application
 
     /**
      * デバッグモードを設定
-     *
+     * 
      * @param boolean $debug
      */
     protected function setDebugMode($debug)
@@ -244,8 +250,7 @@ abstract class Application
         $message = $this->isDebugMode() ? $e->getMessage() : 'Page not found.';
         $message = htmlspecialchars($message, ENT_QUOTES, 'UTF-8');
 
-        $this->response->setContent(
-            <<<EOF
+        $this->response->setContent(<<<EOF
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>

@@ -1,48 +1,79 @@
 <?php
-  class View
-  {
-      protected $base_dir;
-      protected $defaults;
-      protected $layout_variables = [];
+ 
+/**
+ * View.
+ *
+ * @author Katsuhiro Ogawa <fivestar@nequal.jp>
+ */
+class View
+{
+    protected $base_dir;
+    protected $defaults;
+    protected $layout_variables = array();
 
-      public function __construct($base_dir, $defaults = [])
-      {
-          $this->base_dir = $base_dir;
-          $this->defaults = $defaults;
-      }
+    /**
+     * コンストラクタ
+     *
+     * @param string $base_dir
+     * @param array $defaults
+     */
+    public function __construct($base_dir, $defaults = array())
+    {
+        $this->base_dir = $base_dir;
+        $this->defaults = $defaults;
+    }
 
-      public function setLayoutVar($name, $value)
-      {
-          $this->lauout_variables[$name] = $value;
-      }
+    /**
+     * レイアウトに渡す変数を指定
+     *
+     * @param string $name
+     * @param mixed $value
+     */
+    public function setLayoutVar($name, $value)
+    {
+        $this->layout_variables[$name] = $value;
+    }
 
-      public function render($_path, $_variables = [], $_layout = false)
-      {
-          $_file = $this->base_dir . '/' . $_path . '.php';
-        var_dump($this->base_dir);
-          extract(array_merge($this->defaults, $_variables));
+    /**
+     * ビューファイルをレンダリング
+     *
+     * @param string $_path
+     * @param array $_variables
+     * @param mixed $_layout
+     * @return string
+     */
+    public function render($_path, $_variables = array(), $_layout = false)
+    {
+        $_file = $this->base_dir . '/' . $_path . '.php';
 
-          ob_start();
-          ob_implicit_flush(0);
+        extract(array_merge($this->defaults, $_variables));
 
-          require $_file;
+        ob_start();
+        ob_implicit_flush(0);
 
-          $content = ob_get_clean();
+        require $_file;
 
-          if ($_layout) {
-              $content = $this->render(
-                  $_layout,
-                  array_merge(
-                      $this->layout_variables,
-                      ['_content' => $content]
-                  )
-              );
-          }
-          return $content;
-      }
+        $content = ob_get_clean();
 
-      public function escape($string)
-      {
-          return htmlspecialchars($string, ENT_QUOTES, 'UTF-8');
-      }
-  }
+        if ($_layout) {
+            $content = $this->render($_layout,
+                array_merge($this->layout_variables, array(
+                    '_content' => $content,
+                )
+            ));
+        }
+
+        return $content;
+    }
+
+    /**
+     * 指定された値をHTMLエスケープする
+     *
+     * @param string $string
+     * @return string
+     */
+    public function escape($string)
+    {
+        return htmlspecialchars($string, ENT_QUOTES, 'UTF-8');
+    }
+}

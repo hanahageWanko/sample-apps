@@ -7,7 +7,6 @@
           $now = new DateTime();
 
           $sql = "insert into user(User_name, password, created_at) value(:user_name, :password, :created_at)";
-
           $stmt = $this->execute($sql, [
             ':user_name'  => $user_name,
             ':password'   => $password,
