@@ -11,7 +11,7 @@
           $this->defaults = $defaults;
       }
 
-      public function setLayoutVar($name, $valu)
+      public function setLayoutVar($name, $value)
       {
           $this->lauout_variables[$name] = $value;
       }
@@ -19,7 +19,7 @@
       public function render($_path, $_variables = [], $_layout = false)
       {
           $_file = $this->base_dir . '/' . $_path . '.php';
-
+        var_dump($this->base_dir);
           extract(array_merge($this->defaults, $_variables));
 
           ob_start();
@@ -38,7 +38,6 @@
                   )
               );
           }
-          var_dump($content);
           return $content;
       }
 

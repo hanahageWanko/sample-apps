@@ -21,7 +21,7 @@
       public function get($name, $default = null)
       {
           if (isset($_SESSION[$name])) {
-              return $_SESSSION[$name];
+              return $_SESSION[$name];
           }
           return $default;
       }

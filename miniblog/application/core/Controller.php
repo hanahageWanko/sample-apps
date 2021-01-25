@@ -1,4 +1,5 @@
 <?php
+
   abstract class Controller
   {
       protected $controller_name;
@@ -30,32 +31,48 @@
               $this->forward404();
           }
 
-          if($thsi->needsAuthentication($action) && !$this->session->isAuthenticated()) {
-            throw new UnauthorizedActionException();
+          if ($this->needsAuthentication($action) && !$this->session->isAuthenticated()) {
+              throw new UnauthorizedActionException();
           }
 
           $content = $this->$action_method($params);
           return $content;
       }
 
-      protected function needsAuthentication($action) {
-        if(
-          $this->auth_action === true
-          || (is_array($this->auth_actions)
-          && in_array($action, $thsi->aurh_actions))
-        ){
-          return true;
-        }
-        return false;
+      /**
+       * 指定されたアクションが認証済みでないとアクセスできないか判定
+       *
+       * @param string $action
+       * @return boolean
+       */
+      protected function needsAuthentication($action)
+      {
+          if ($this->auth_actions === true
+            || (is_array($this->auth_actions) && in_array($action, $this->auth_actions))
+        ) {
+              return true;
+          }
+
+          return false;
       }
+
+
+      /**
+       * ビューファイルのレンダリング
+       *
+       * @param array $variables テンプレートに渡す変数の連想配列
+       * @param string $template ビューファイル名(nullの場合はアクション名を使う)
+       * @param string $layout レイアウトファイル名
+       * @return string レンダリングしたビューファイルの内容
+       */
 
       protected function render($variables = [], $template = null, $layout = 'layout')
       {
-          $defaults = [
-        'request'  => $this->request,
-        'base_url' => $this->request->getBaseUrl(),
-        'session'  => $this->session
-      ];
+          $defaults = array(
+            'request'  => $this->request,
+            'base_url' => $this->request->getBaseUrl(),
+            'session'  => $this->session,
+        );
 
           $view = new View($this->application->getViewDir(), $defaults);
 
@@ -64,14 +81,27 @@
           }
 
           $path = $this->controller_name . '/' .$template;
+
           return $view->render($path, $variables, $layout);
       }
+            
 
+      /**
+       * 404エラー画面を出力
+       *
+       * @throws HttpNotFoundException
+       */
       protected function forward404()
       {
-          throw new HttpnotFoundException('Forwarded 404 page form ' . $this->controller_name . '/' . $this->action_name);
+          throw new HttpNotFoundException('Forwarded 404 page from '
+            . $this->controller_name . '/' . $this->action_name);
       }
 
+      /**
+       * 指定されたURLへリダイレクト
+       *
+       * @param string $url
+       */
       protected function redirect($url)
       {
           if (!preg_match('#https?://#', $url)) {
@@ -86,11 +116,17 @@
           $this->response->setHttpHeader('Location', $url);
       }
 
+      /**
+       * CSRFトークンを生成
+       *
+       * @param string $form_name
+       * @return string $token
+       */
       protected function generateCsrfToken($form_name)
       {
           $key = 'csrf_tokens/' . $form_name;
           $tokens = $this->session->get($key, []);
-          if (count($tokens >= 10)) {
+          if (count($tokens) >= 10) {
               array_shift($tokens);
           }
 
@@ -102,9 +138,16 @@
           return $token;
       }
 
+      /**
+       * CSRFトークンが妥当かチェック
+       *
+       * @param string $form_name
+       * @param string $token
+       * @return boolean
+       */
       protected function checkCsrfToken($form_name, $token)
       {
-          $key = 'csrf_tokens' . $form_name;
+          $key = 'csrf_tokens/' . $form_name;
           $tokens = $this->session->get($key, []);
 
           if (false !== ($pos = array_search($token, $tokens, true))) {
@@ -113,6 +156,7 @@
 
               return true;
           }
+
           return false;
       }
   }
