@@ -75,10 +75,10 @@ class AccountController extends Controller
         $followings = $this->db_manager->get('User')
             ->fetchAllFollowingsByUserId($user['id']);
 
-        return $this->render(array(
+        return $this->render([
             'user'       => $user,
             'followings' => $followings,
-        ));
+        ]);
     }
 
     public function signinAction()
