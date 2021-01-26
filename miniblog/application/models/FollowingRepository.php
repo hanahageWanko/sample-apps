@@ -11,16 +11,16 @@
     public function isFollowing($user_id, $following_id) {
       $sql = " SELECT COUNT(user_id) as count
                FROM following
-               WHERE user_id = :user_id,
+               WHERE user_id = :user_id 
                AND following_id = :following_id
       ";
 
       $row = $this->fetch($sql, [
-        'user_id'      => $user_id,
-        'following_id' => $following_id
+        ':user_id'      => $user_id,
+        ':following_id' => $following_id
       ]);
 
-      if($row['count'] === '0') {
+      if($row['count'] !== '0') {
         return true;
       }
 

@@ -25,7 +25,7 @@
     <?php foreach($followings as $following): ?>
       <li>
         <a href="<?php echo $base_url; ?>/user/<?php echo $this->escape($following['user_name']); ?>">
-          <?php echo $this->escape($folowing['user_name']); ?>
+          <?php echo $this->escape($following['user_name']); ?>
         </a>
       </li>
     <?php endforeach; ?>
