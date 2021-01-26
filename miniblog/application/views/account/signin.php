@@ -15,7 +15,7 @@
     }
   ?>
   
-  <?phpc
+  <?php
     echo $this->render('account/inputs', ['user_name' => $user_name, 'password' => $password]);
   ?>
 
