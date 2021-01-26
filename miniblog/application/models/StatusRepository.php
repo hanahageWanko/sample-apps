@@ -39,7 +39,6 @@ class StatusRepository extends DbRepository {
                 WHERE u.id = :user_id
                 ORDER BY a.created_at DESC
         ";
-
         return $this->fetchAll($sql, [':user_id' => $user_id]);
     }
 
