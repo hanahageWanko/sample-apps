@@ -1,10 +1,4 @@
 <?php
-
-/**
- * Application.
- *
- * @author Katsuhiro Ogawa <fivestar@nequal.jp>
- */
 abstract class Application
 {
     protected $debug = false;
@@ -13,11 +7,6 @@ abstract class Application
     protected $session;
     protected $db_manager;
 
-    /**
-     * コンストラクタ
-     *
-     * @param boolean $debug
-     */
     public function __construct($debug = false)
     {
         $this->setDebugMode($debug);
@@ -25,11 +14,6 @@ abstract class Application
         $this->configure();
     }
 
-    /**
-     * デバッグモードを設定
-     * 
-     * @param boolean $debug
-     */
     protected function setDebugMode($debug)
     {
         if ($debug) {
@@ -42,9 +26,6 @@ abstract class Application
         }
     }
 
-    /**
-     * アプリケーションの初期化
-     */
     protected function initialize()
     {
         $this->request    = new Request();
@@ -54,122 +35,59 @@ abstract class Application
         $this->router     = new Router($this->registerRoutes());
     }
 
-    /**
-     * アプリケーションの設定
-     */
     protected function configure()
     {
     }
 
-    /**
-     * プロジェクトのルートディレクトリを取得
-     *
-     * @return string ルートディレクトリへのファイルシステム上の絶対パス
-     */
     abstract public function getRootDir();
 
-    /**
-     * ルーティングを取得
-     *
-     * @return array
-     */
     abstract protected function registerRoutes();
 
-    /**
-     * デバッグモードか判定
-     *
-     * @return boolean
-     */
     public function isDebugMode()
     {
         return $this->debug;
     }
 
-    /**
-     * Requestオブジェクトを取得
-     *
-     * @return Request
-     */
     public function getRequest()
     {
         return $this->request;
     }
 
-    /**
-     * Responseオブジェクトを取得
-     *
-     * @return Response
-     */
     public function getResponse()
     {
         return $this->response;
     }
 
-    /**
-     * Sessionオブジェクトを取得
-     *
-     * @return Session
-     */
     public function getSession()
     {
         return $this->session;
     }
 
-    /**
-     * DbManagerオブジェクトを取得
-     *
-     * @return DbManager
-     */
     public function getDbManager()
     {
         return $this->db_manager;
     }
 
-    /**
-     * コントローラファイルが格納されているディレクトリへのパスを取得
-     *
-     * @return string
-     */
     public function getControllerDir()
     {
         return $this->getRootDir() . '/controllers';
     }
 
-    /**
-     * ビューファイルが格納されているディレクトリへのパスを取得
-     *
-     * @return string
-     */
     public function getViewDir()
     {
         return $this->getRootDir() . '/views';
     }
 
-    /**
-     * モデルファイルが格納されているディレクトリへのパスを取得
-     *
-     * @return stirng
-     */
     public function getModelDir()
     {
         return $this->getRootDir() . '/models';
     }
 
-    /**
-     * ドキュメントルートへのパスを取得
-     *
-     * @return string
-     */
     public function getWebDir()
     {
         return $this->getRootDir() . '/web';
     }
 
-    /**
-     * アプリケーションを実行する
-     *
-     * @throws HttpNotFoundException ルートが見つからない場合
-     */
     public function run()
     {
         try {
@@ -192,15 +110,6 @@ abstract class Application
         $this->response->send();
     }
 
-    /**
-     * 指定されたアクションを実行する
-     *
-     * @param string $controller_name
-     * @param string $action
-     * @param array $params
-     *
-     * @throws HttpNotFoundException コントローラが特定できない場合
-     */
     public function runAction($controller_name, $action, $params = array())
     {
         $controller_class = ucfirst($controller_name) . 'Controller';
@@ -215,12 +124,6 @@ abstract class Application
         $this->response->setContent($content);
     }
 
-    /**
-     * 指定されたコントローラ名から対応するControllerオブジェクトを取得
-     *
-     * @param string $controller_class
-     * @return Controller
-     */
     protected function findController($controller_class)
     {
         if (!class_exists($controller_class)) {
@@ -239,11 +142,6 @@ abstract class Application
         return new $controller_class($this);
     }
 
-    /**
-     * 404エラー画面を返す設定
-     *
-     * @param Exception $e
-     */
     protected function render404Page($e)
     {
         $this->response->setStatusCode(404, 'Not Found');
