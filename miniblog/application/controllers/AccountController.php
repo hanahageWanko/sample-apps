@@ -126,10 +126,9 @@ class AccountController extends Controller
             $user_repository = $this->db_manager->get('User');
             $user = $user_repository->fetchByUserName($user_name);
 
-            if (!$user
-                || ($user['password'] !== $user_repository->hashPassword($password))
+            if (!$user || !password_verify($password, $user['password'])
             ) {
-                $errors[] = 'ユーザIDかパスワードが不正です';
+               $errors[] = 'ユーザIDかパスワードが不正です';
             } else {
                 $this->session->setAuthenticated(true);
                 $this->session->set('user', $user);
