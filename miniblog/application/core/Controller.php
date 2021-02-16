@@ -39,6 +39,11 @@ abstract class Controller
         return $content;
     }
 
+    /**
+     * ログイン処理要否の判定
+     *
+     * @param string ログイン処理の必要なアクション
+     */
     protected function needsAuthentication($action)
     {
         if ($this->auth_actions === true
